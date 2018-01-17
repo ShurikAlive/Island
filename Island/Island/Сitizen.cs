@@ -15,6 +15,8 @@ namespace Island
         private int age;// Возраст в неделях. 1 год = 48 недель
         private bool isAlive;// Живой ли человек
         private Сitizen couple;// С кем житель создал семейную пару
+        private int weekWithoutChildrens;// Кол-во недель сколько пара не рождала
+        private bool calculateChildrenDateInThisWeek;// Вносили ли изменение рождения ребенка у пары
 
         public Сitizen(Random rnd, bool isChildren)
         {
@@ -32,6 +34,8 @@ namespace Island
             age = 0;
             isAlive = true;
             couple = null;
+            weekWithoutChildrens = 0;
+            calculateChildrenDateInThisWeek = false;
         }
 
         private void InitСitizen()
@@ -40,6 +44,8 @@ namespace Island
             age = rnd.Next(0, 4320);
             isAlive = true;
             couple = null;
+            weekWithoutChildrens = 0;
+            calculateChildrenDateInThisWeek = false;
         }
 
         public void LiveWeek(ArrayList citizens)
@@ -69,13 +75,42 @@ namespace Island
                         & (citizen.GetCouple() == null) & (this != citizen))
                     {
                         couple = citizen;
-                        citizen.SetCouple(this); 
+                        weekWithoutChildrens = 0;
+                        citizen.SetCouple(this);
+                        citizen.SetWeekWithoutChildrens(0);
                         break;
                     }
                 }
             }
 
+            // Добавляем неделю паре сколько не рожали
+            if (couple != null) 
+            {
+                if ((calculateChildrenDateInThisWeek == false) & (couple.IsAlive()))
+                {
+                    weekWithoutChildrens++;
+                    calculateChildrenDateInThisWeek = true;
+                    couple.SetWeekWithoutChildrens(weekWithoutChildrens);
+                    couple.SetCalculateChildrenDateInThisWeek(true);
+                }
+            }
 
+            // Пытаемся выдать потомство, 
+            if (couple != null)
+            {
+                if ((couple.IsAlive()) & (weekWithoutChildrens >= 48) & (weekWithoutChildrens <= 240))
+                {
+                    int child = rnd.Next(0, 6);
+                    if ((child > 2) || (weekWithoutChildrens == 240))
+                    {
+                        weekWithoutChildrens = 0;
+                        calculateChildrenDateInThisWeek = true;
+                        couple.SetWeekWithoutChildrens(0);
+                        couple.SetCalculateChildrenDateInThisWeek(true);
+                        citizens.Add(new Сitizen(rnd, true));
+                    }
+                }
+            }
         }
 
         public bool IsAlive()
@@ -101,6 +136,26 @@ namespace Island
         public void SetCouple(Сitizen couple)
         {
             this.couple = couple;
+        }
+
+        public bool GetCalculateChildrenDateInThisWeek()
+        {
+            return calculateChildrenDateInThisWeek;
+        }
+
+        public void SetCalculateChildrenDateInThisWeek(bool calculateChildrenDateInThisWeek)
+        {
+            this.calculateChildrenDateInThisWeek = calculateChildrenDateInThisWeek;
+        }
+
+        public int GetWeekWithoutChildrens()
+        {
+            return weekWithoutChildrens;
+        }
+
+        public void SetWeekWithoutChildrens(int weeks)
+        {
+            this.weekWithoutChildrens = weeks;
         }
     }
 }

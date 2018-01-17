@@ -13,7 +13,7 @@ namespace Island
         private Random rnd;
 
         private ArrayList citizens;
-        private int startCountCitizens = 10000;
+        private int startCountCitizens = 10;
 
         private int week_number;
 
@@ -49,10 +49,35 @@ namespace Island
 
         private void UpdateCitizens()
         {
+            // Прединициализация параметров на итерацию
             foreach (Сitizen citizen in citizens)
             {
-                citizen.LiveWeek(citizens);
+                citizen.SetCalculateChildrenDateInThisWeek(false);
             }
+
+            // Основной UPDATE
+            for (int i = 0; i < citizens.Count; i++)
+            {
+                ((Сitizen)citizens[i]).LiveWeek(citizens);
+            }
+
+            // Убираем трупы
+            for(int i = 0; i < citizens.Count; i ++)
+            {
+                if (! ((Сitizen)citizens[i]).IsAlive())
+                {
+                    Сitizen couple = ((Сitizen)citizens[i]).GetCouple();
+                    if (couple != null) couple.SetCouple(null);
+                    citizens.RemoveAt(i);
+                }
+            }
+
+            MessageBox.Show(citizens.Count.ToString());
+        }
+
+        private object Citizen(object v)
+        {
+            throw new NotImplementedException();
         }
     }
 }
