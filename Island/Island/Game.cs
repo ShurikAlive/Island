@@ -49,14 +49,10 @@ namespace Island
 
         private void UpdateCitizens()
         {
-            int countAlive = 0;
             foreach (Сitizen citizen in citizens)
             {
-                citizen.LiveWeek();
-                if(citizen.IsAlive()) countAlive++;
+                citizen.LiveWeek(citizens);
             }
-
-            MessageBox.Show(countAlive.ToString());
         }
     }
 }
