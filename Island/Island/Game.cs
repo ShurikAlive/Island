@@ -15,6 +15,9 @@ namespace Island
         private ArrayList citizens;
         private int startCountCitizens = 10;
 
+        private ArrayList firms;
+        private int weeksForCreateFirm;
+
         private int week_number;
 
         public Game(Random rnd)
@@ -27,6 +30,13 @@ namespace Island
         {
             week_number = 0;
             InitCitizens();
+            InitFirms();
+        }
+
+        private void InitFirms()
+        {
+            firms = new ArrayList();
+            weeksForCreateFirm = 0;
         }
 
         private void InitCitizens()
@@ -43,8 +53,55 @@ namespace Island
         public void NextWeek()
         {
             week_number++;
-
+            
             UpdateCitizens();
+            UpdateFirms();
+        }
+
+        private void UpdateFirms()
+        {
+            weeksForCreateFirm++;
+
+            if (weeksForCreateFirm == 4)//48)
+            {
+                int countNoWorkPeoples = 0;
+
+                // подсчет безработных
+                foreach (Сitizen citizen in citizens)
+                {
+                    // Кол во безработных совершеннолетних
+                    if ((citizen.GetWork() == null) & (citizen.GetAge() >= 864))
+                    {
+                        countNoWorkPeoples++;
+                    }
+                }
+
+                int fivePercentsPeople = Convert.ToInt32(citizens.Count * 0.05);
+
+                // Создаем новую фирму если есть 5% безработных
+                if (countNoWorkPeoples >= fivePercentsPeople)
+                {
+                    IWork newFirm = new Firm(rnd);
+
+                    int peopleDoWork = 0;
+
+                    foreach (Сitizen citizen in citizens)
+                    {
+                        if ((citizen.GetWork() == null) &(citizen.GetAge() >= 864))
+                        {
+                            peopleDoWork++;
+                            citizen.SetWork(newFirm);
+
+                            if (peopleDoWork >= fivePercentsPeople)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    weeksForCreateFirm = 0;
+                }
+            }
         }
 
         private void UpdateCitizens()
@@ -72,12 +129,8 @@ namespace Island
                 }
             }
 
-            MessageBox.Show(citizens.Count.ToString());
         }
 
-        private object Citizen(object v)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

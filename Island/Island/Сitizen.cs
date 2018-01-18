@@ -17,6 +17,7 @@ namespace Island
         private Сitizen couple;// С кем житель создал семейную пару
         private int weekWithoutChildrens;// Кол-во недель сколько пара не рождала
         private bool calculateChildrenDateInThisWeek;// Вносили ли изменение рождения ребенка у пары
+        private IWork work;
 
         public Сitizen(Random rnd, bool isChildren)
         {
@@ -36,6 +37,7 @@ namespace Island
             couple = null;
             weekWithoutChildrens = 0;
             calculateChildrenDateInThisWeek = false;
+            work = null;
         }
 
         private void InitСitizen()
@@ -46,6 +48,7 @@ namespace Island
             couple = null;
             weekWithoutChildrens = 0;
             calculateChildrenDateInThisWeek = false;
+            work = null;
         }
 
         public void LiveWeek(ArrayList citizens)
@@ -156,6 +159,16 @@ namespace Island
         public void SetWeekWithoutChildrens(int weeks)
         {
             this.weekWithoutChildrens = weeks;
+        }
+
+        public IWork GetWork()
+        {
+            return work;
+        }
+
+        public void SetWork(IWork work)
+        {
+            this.work = work;
         }
     }
 }
