@@ -19,6 +19,8 @@ namespace Island
         private bool calculateChildrenDateInThisWeek;// Вносили ли изменение рождения ребенка у пары
         private IWork work;
 
+        private double mony;
+
         public Сitizen(Random rnd, bool isChildren)
         {
             this.rnd = rnd;
@@ -38,6 +40,7 @@ namespace Island
             weekWithoutChildrens = 0;
             calculateChildrenDateInThisWeek = false;
             work = null;
+            mony = 0.0;
         }
 
         private void InitСitizen()
@@ -49,9 +52,10 @@ namespace Island
             weekWithoutChildrens = 0;
             calculateChildrenDateInThisWeek = false;
             work = null;
+            mony = 0.0;
         }
 
-        public void LiveWeek(ArrayList citizens)
+        public void LiveWeek(ArrayList citizens, ArrayList products)
         {
             if (!isAlive) return;
 
@@ -67,6 +71,41 @@ namespace Island
                     return;
                 }
             }
+
+            // Пытаемся покушать =)
+            int countEat = rnd.Next(21, 57);// Кол-во еды которое съедим за неделю
+
+            // Пытаемся получить еду
+            for (int i = 0; i < products.Count; i++)
+            {
+                if (((Product)products[i]).GetTypeProduct() == 0) {
+
+                    int quProduct = ((Product)products[i]).GetQuantity();
+
+                    int bayPr = countEat;
+                    if (quProduct < countEat)
+                    {
+                        bayPr = quProduct;
+                    }
+
+                    if ((bayPr * ((Product)products[i]).GetCost()) <= mony) // Если хватает денег
+                    {
+                        countEat -= bayPr;
+                        mony -= ((Product)products[i]).BayProduct(bayPr);
+
+                        if (countEat == 0) break;
+                    }
+                }
+            }
+
+            // Мало еды
+            if (countEat > 0)
+            {
+                isAlive = false;
+                return;
+            }
+
+            //^ Пытаемся покушать =)
 
             // Пытаемся создать семью
             // Если в возрастном диапазоне, то ищем пару
@@ -169,6 +208,16 @@ namespace Island
         public void SetWork(IWork work)
         {
             this.work = work;
+        }
+
+        public double GetMony()
+        {
+            return mony;
+        }
+
+        public void SetMony(double mony)
+        {
+            this.mony = mony;
         }
     }
 }

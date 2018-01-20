@@ -18,6 +18,8 @@ namespace Island
         private ArrayList firms;
         private int weeksForCreateFirm;
 
+        private ArrayList products;
+
         private int week_number;
 
         public Game(Random rnd)
@@ -31,6 +33,13 @@ namespace Island
             week_number = 0;
             InitCitizens();
             InitFirms();
+            InitProducts();
+        }
+
+        private void InitProducts()
+        {
+            products = new ArrayList();
+            products.Add(new Product(0, startCountCitizens * 56 * 48, null));// Добавляем базово еды, что бы все могли купить =)
         }
 
         private void InitFirms()
@@ -55,14 +64,24 @@ namespace Island
             week_number++;
             
             UpdateCitizens();
+            CreateFirms();
             UpdateFirms();
         }
 
         private void UpdateFirms()
         {
+            // Основной UPDATE
+            for (int i = 0; i < firms.Count; i++)
+            {
+                ((Firm)firms[i]).Update(products, citizens);
+            }
+        }
+
+        private void CreateFirms()
+        {
             weeksForCreateFirm++;
 
-            if (weeksForCreateFirm == 4)//48)
+            if (weeksForCreateFirm == 48)
             {
                 int countNoWorkPeoples = 0;
 
@@ -82,6 +101,7 @@ namespace Island
                 if (countNoWorkPeoples >= fivePercentsPeople)
                 {
                     IWork newFirm = new Firm(rnd);
+                    firms.Add(newFirm);
 
                     int peopleDoWork = 0;
 
@@ -115,17 +135,27 @@ namespace Island
             // Основной UPDATE
             for (int i = 0; i < citizens.Count; i++)
             {
-                ((Сitizen)citizens[i]).LiveWeek(citizens);
+                ((Сitizen)citizens[i]).LiveWeek(citizens, products);
             }
 
             // Убираем трупы
+            // TODO : КРИВО УБИРАЕТ ТРУПЫ!!!
             for(int i = 0; i < citizens.Count; i ++)
             {
-                if (! ((Сitizen)citizens[i]).IsAlive())
+                if (((Сitizen)citizens[i]).IsAlive() == false)
                 {
                     Сitizen couple = ((Сitizen)citizens[i]).GetCouple();
                     if (couple != null) couple.SetCouple(null);
                     citizens.RemoveAt(i);
+                }
+            }
+
+            // Убираем израсходованные продукты
+            for (int i = 0; i < products.Count; i++)
+            {
+                if (((Product)products[i]).GetQuantity() <= 0.0)
+                {
+                    products.RemoveAt(i);
                 }
             }
 

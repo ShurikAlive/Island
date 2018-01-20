@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Game.cs" />
     <Compile Include="IWork.cs" />
+    <Compile Include="Product.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Сitizen.cs" />
