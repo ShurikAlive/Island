@@ -139,24 +139,39 @@ namespace Island
             }
 
             // Убираем трупы
-            // TODO : КРИВО УБИРАЕТ ТРУПЫ!!!
-            for(int i = 0; i < citizens.Count; i ++)
+            ArrayList boofer = new ArrayList();
+
+            for (int i = 0; i < citizens.Count; i ++)
             {
                 if (((Сitizen)citizens[i]).IsAlive() == false)
                 {
+                    
+
                     Сitizen couple = ((Сitizen)citizens[i]).GetCouple();
                     if (couple != null) couple.SetCouple(null);
-                    citizens.RemoveAt(i);
+                    boofer.Add(citizens[i]);
                 }
             }
 
+            foreach (Object citizen in boofer)
+            {
+                citizens.Remove(citizen);
+            }
+
             // Убираем израсходованные продукты
+            ArrayList boofer1 = new ArrayList();
+
             for (int i = 0; i < products.Count; i++)
             {
                 if (((Product)products[i]).GetQuantity() <= 0.0)
                 {
-                    products.RemoveAt(i);
+                    boofer1.Add(products[i]);
                 }
+            }
+
+            foreach (Object product in boofer1)
+            {
+                products.Remove(product);
             }
 
         }
