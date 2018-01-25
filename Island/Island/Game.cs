@@ -20,6 +20,8 @@ namespace Island
 
         private ArrayList products;
 
+        private Firm state;
+
         private int week_number;
 
         public Game(Random rnd)
@@ -34,6 +36,13 @@ namespace Island
             InitCitizens();
             InitFirms();
             InitProducts();
+            InitState();
+        }
+
+        private void InitState()
+        {
+            state = new Firm(rnd);
+            state.AddMony(1000000.0);// Стартовый капитал государства =)
         }
 
         private void InitProducts()
@@ -66,6 +75,81 @@ namespace Island
             UpdateCitizens();
             CreateFirms();
             UpdateFirms();
+            UpdateState();
+        }
+
+        private void UpdateState()
+        {
+            // Принимаем на работу =)
+            int countCitizen = citizens.Count;
+            int maxWorkers = Convert.ToInt32(citizens.Count * 0.3);
+
+            int WorkInState = 0;
+
+            // подсчет госработников
+            foreach (Сitizen citizen in citizens)
+            {
+                if (citizen.GetWork() == state)
+                {
+                    WorkInState++;
+                }
+            }
+
+            // Принимаем на работу =)
+            if (maxWorkers > WorkInState)
+            {
+                int maxNormWorkers = maxWorkers - WorkInState;// Кол во человек, которое необходимо принять на работу =)
+
+                // Рекрутируем =)
+                foreach (Сitizen citizen in citizens)
+                {
+                    // безработных совершеннолетних
+                    if ((maxNormWorkers > 0) & (citizen.GetWork() == null) & (citizen.GetAge() >= 864))
+                    {
+                        citizen.SetWork(state);
+                        maxNormWorkers--;
+                    }
+                }
+            }
+            // ^ Принимаем на работу =)
+
+            // Раздаем пособие по безработице
+            foreach (Сitizen citizen in citizens)
+            {
+                if (citizen.GetWork() == null)
+                {
+                    double posobie = 10.0;
+                    citizen.SetMony(state.GetMony(posobie) + citizen.GetMony());
+                }
+            }
+            // ^ Раздаем пособие по безработице
+
+            // Раздаем зарплату работникам
+            foreach (Сitizen citizen in citizens)
+            {
+                if (citizen.GetWork() == state)
+                {
+                    double salary = state.GetSizeSalary();
+                    double getMony = state.GetMony(salary);
+                    citizen.SetMony(getMony + citizen.GetMony());
+                }
+            }
+            // ^ Раздаем зарплату работникам
+
+            // Собираем налоги
+            double tax = 2.0;// TODO: Заменить статичное число динамичным расчетом налога
+
+            foreach (Сitizen citizen in citizens)
+            {
+                citizen.SetMony(citizen.GetMony() - tax);
+                state.AddMony(tax);
+            }
+
+            for (int i = 0; i < firms.Count; i++)
+            {
+                state.AddMony(((Firm)firms[i]).GetMony(tax));
+            }
+            // ^ Собираем налоги
         }
 
         private void UpdateFirms()

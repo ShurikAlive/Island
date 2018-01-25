@@ -31,7 +31,7 @@ namespace Island
             return currentCostProductB;
         }
 
-        internal void Update(ArrayList products, ArrayList citizens)
+        public void Update(ArrayList products, ArrayList citizens)
         {
             int countWorkers = 0;
 
@@ -46,9 +46,25 @@ namespace Island
             products.Add(new Product(0, countWorkers * 100, this));
         }
 
-        internal void AddMony(double firmMony)
+        public void AddMony(double firmMony)
         {
             mony += firmMony;
         }
+
+        public double GetMony(double _mony)
+        {
+            if (_mony > mony)
+                return 0.0;
+
+            mony -= _mony;
+
+            return _mony;
+        }
+
+        public double GetSizeSalary()
+        {
+            return 20.0; // TODO Заменить константу на алгоритм расчета зарплаты
+        }
+
     }
 }
